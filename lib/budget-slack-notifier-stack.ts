@@ -4,7 +4,7 @@ import * as iam from "@aws-cdk/aws-iam";
 import * as chatbot from "@aws-cdk/aws-chatbot";
 import * as budgets from "@aws-cdk/aws-budgets";
 
-export interface ConditionProps {
+export interface ConditionProps extends cdk.StackProps {
   readonly slackChannelId: string;
   readonly slackWorkspaceId: string;
   readonly unit: string;
@@ -15,15 +15,13 @@ export interface ConditionProps {
 }
 
 export class BudgetSlackNotifierStack extends cdk.Stack {
-  constructor(
-    scope: cdk.Construct,
-    id: string,
-    props?: cdk.StackProps & ConditionProps
-  ) {
+  constructor(scope: cdk.Construct, id: string, props: ConditionProps) {
     super(scope, id, props);
 
     /* SNS */
-    const topic = new sns.Topic(this, "budget-slack-notifier");
+    const topic = new sns.Topic(this, "budget-slack-notifier-topic", {
+      topicName: "budget-slack-notifier-topic"
+    });
 
     topic.addToResourcePolicy(
       new iam.PolicyStatement({
